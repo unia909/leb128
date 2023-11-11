@@ -13,12 +13,5 @@ documentation = "https://docs.rs/leb128"
 repository = "https://github.com/gimli-rs/leb128"
 exclude = ["/.travis.yml", "/.coveralls.yml", "/format"]
 
-[dependencies]
-core_io = { version = "0.1.20210325", optional = true }
-
 [dev-dependencies]
 quickcheck = "0.8.0"
-
-[features]
-default = ["core_io"]
-std = []
