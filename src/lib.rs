@@ -11,13 +11,13 @@
 //!
 //! let mut buf = [0; 1024];
 //!
-//! // Write to anything that implements `std::io::Write`.
+//! // Write to anything that implements `io::Write`.
 //! {
 //!     let mut writable = &mut buf[..];
 //!     leb128::write::signed(&mut writable, -12345).expect("Should write number");
 //! }
 //!
-//! // Read from anything that implements `std::io::Read`.
+//! // Read from anything that implements `io::Read`.
 //! let mut readable = &buf[..];
 //! let val = leb128::read::signed(&mut readable).expect("Should read number");
 //! assert_eq!(val, -12345);
@@ -56,15 +56,17 @@ pub fn low_bits_of_byte(byte: u8) -> u8 {
 #[doc(hidden)]
 #[inline]
 pub fn low_bits_of_u64(val: u64) -> u8 {
-    let byte = val & (std::u8::MAX as u64);
+    let byte = val & (core::u8::MAX as u64);
     low_bits_of_byte(byte as u8)
 }
 
 /// A module for reading LEB128-encoded signed and unsigned integers.
 pub mod read {
     use super::{low_bits_of_byte, CONTINUATION_BIT, SIGN_BIT};
-    use std::fmt;
+    #[cfg(feature = "std")]
     use std::io;
+    #[cfg(not(feature = "std"))]
+    use core_io as io;
 
     /// An error type for reading LEB128-encoded values.
     #[derive(Debug)]
@@ -81,8 +83,9 @@ pub mod read {
         }
     }
 
-    impl fmt::Display for Error {
-        fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+    #[cfg(feature = "std")]
+    impl std::fmt::Display for Error {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
             match *self {
                 Error::IoError(ref e) => e.fmt(f),
                 Error::Overflow => {
@@ -92,6 +95,7 @@ pub mod read {
         }
     }
 
+    #[cfg(feature = "std")]
     impl std::error::Error for Error {
         fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
             match *self {
@@ -101,7 +105,7 @@ pub mod read {
         }
     }
 
-    /// Read an unsigned LEB128-encoded number from the `std::io::Read` stream
+    /// Read an unsigned LEB128-encoded number from the `io::Read` stream
     /// `r`.
     ///
     /// On success, return the number.
@@ -134,7 +138,7 @@ pub mod read {
         }
     }
 
-    /// Read a signed LEB128-encoded number from the `std::io::Read` stream `r`.
+    /// Read a signed LEB128-encoded number from the `io::Read` stream `r`.
     ///
     /// On success, return the number.
     pub fn signed<R>(r: &mut R) -> Result<i64, Error>
@@ -179,9 +183,12 @@ pub mod read {
 /// A module for writing LEB128-encoded signed and unsigned integers.
 pub mod write {
     use super::{low_bits_of_u64, CONTINUATION_BIT};
+    #[cfg(feature = "std")]
     use std::io;
+    #[cfg(not(feature = "std"))]
+    use core_io as io;
 
-    /// Write `val` to the `std::io::Write` stream `w` as an unsigned LEB128 value.
+    /// Write `val` to the `io::Write` stream `w` as an unsigned LEB128 value.
     ///
     /// On success, return the number of bytes written to `w`.
     pub fn unsigned<W>(w: &mut W, mut val: u64) -> Result<usize, io::Error>
@@ -207,7 +214,7 @@ pub mod write {
         }
     }
 
-    /// Write `val` to the `std::io::Write` stream `w` as a signed LEB128 value.
+    /// Write `val` to the `io::Write` stream `w` as a signed LEB128 value.
     ///
     /// On success, return the number of bytes written to `w`.
     pub fn signed<W>(w: &mut W, mut val: i64) -> Result<usize, io::Error>
@@ -243,8 +250,10 @@ pub mod write {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std;
+    #[cfg(feature = "std")]
     use std::io;
+    #[cfg(not(feature = "std"))]
+    use core_io as io;
 
     #[test]
     fn test_low_bits_of_byte() {
@@ -504,7 +513,7 @@ mod tests {
         for i in -513..513 {
             inner(i);
         }
-        inner(std::i64::MIN);
+        inner(core::i64::MIN);
     }
 
     #[test]
