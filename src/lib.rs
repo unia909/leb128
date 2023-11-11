@@ -177,7 +177,7 @@ pub mod write {
             bytes_written += 1;
 
             if done {
-                return (Ok(bytes_written), buf);
+                return (bytes_written, buf);
             }
         }
     }
