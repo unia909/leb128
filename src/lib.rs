@@ -74,7 +74,7 @@ pub mod read {
                 }
                 return (Err(()), buf);
             }
-            buf = &(*buf)[1..];
+            *buf = &(*buf)[1..];
 
             let low_bits = low_bits_of_byte(byte) as u64;
             result |= low_bits << shift;
@@ -104,7 +104,7 @@ pub mod read {
                 }
                 return (Err(()), buf);
             }
-            buf = &(*buf)[1..];
+            *buf = &(*buf)[1..];
 
             let low_bits = low_bits_of_byte(byte) as i64;
             result |= low_bits << shift;
@@ -144,7 +144,7 @@ pub mod write {
             }
 
             (*buf)[0] = byte;
-            buf = &mut (*buf)[1..];
+            *buf = &mut (*buf)[1..];
             bytes_written += 1;
 
             if val == 0 {
@@ -173,7 +173,7 @@ pub mod write {
             }
 
             (*buf)[0] = byte;
-            buf = &mut (*buf)[1..];
+            *buf = &mut (*buf)[1..];
             bytes_written += 1;
 
             if done {
