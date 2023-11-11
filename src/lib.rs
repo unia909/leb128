@@ -41,6 +41,10 @@
 //! ```
 
 #![deny(missing_docs)]
+#![no_std]
+
+#[cfg(not(feature = "std"))]
+extern crate core_io;
 
 #[doc(hidden)]
 pub const CONTINUATION_BIT: u8 = 1 << 7;
@@ -63,7 +67,7 @@ pub fn low_bits_of_u64(val: u64) -> u8 {
 /// A module for reading LEB128-encoded signed and unsigned integers.
 pub mod read {
     use super::{low_bits_of_byte, CONTINUATION_BIT, SIGN_BIT};
-    use core::Result::{self, Ok, Err};
+    use core::result::Result::{self, Ok, Err};
     use core::marker::Sized;
     #[cfg(feature = "std")]
     use std::io;
@@ -71,7 +75,7 @@ pub mod read {
     use core_io as io;
 
     /// An error type for reading LEB128-encoded values.
-    #[derive(Debug)]
+    #[cfg_attr(feature = "std", derive(Debug))]
     pub enum Error {
         /// There was an underlying IO error.
         IoError(io::Error),
@@ -185,7 +189,7 @@ pub mod read {
 /// A module for writing LEB128-encoded signed and unsigned integers.
 pub mod write {
     use super::{low_bits_of_u64, CONTINUATION_BIT};
-    use core::Result::{self, Ok};
+    use core::result::Result::{self, Ok};
     use core::marker::Sized;
     #[cfg(feature = "std")]
     use std::io;
