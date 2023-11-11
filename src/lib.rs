@@ -133,7 +133,7 @@ pub mod write {
     /// Write `val` to the buf as an unsigned LEB128 value.
     ///
     /// On success, return the number of bytes written to `w`.
-    pub fn unsigned(buf: &mut &mut [u8], mut val: u64) -> usize {
+    pub fn unsigned<'a>(buf: &'a mut &'a mut [u8], mut val: u64) -> usize {
         let mut bytes_written = 0;
         loop {
             let mut byte = low_bits_of_u64(val);
@@ -156,7 +156,7 @@ pub mod write {
     /// Write `val` to the `buf` as a signed LEB128 value.
     ///
     /// On success, return the number of bytes written to `w`.
-    pub fn signed(buf: &mut &mut [u8], mut val: i64) -> usize {
+    pub fn signed<'a>(buf: &'a mut &'a mut [u8], mut val: i64) -> usize {
         let mut bytes_written = 0;
         loop {
             let mut byte = val as u8;
