@@ -129,10 +129,6 @@ pub mod write {
     use super::{low_bits_of_u64, CONTINUATION_BIT};
     use core::result::Result::{self, Ok};
     use core::marker::Sized;
-    #[cfg(feature = "std")]
-    use std::io;
-    #[cfg(not(feature = "std"))]
-    use core_io as io;
 
     /// Write `val` to the buf as an unsigned LEB128 value.
     ///
@@ -148,11 +144,11 @@ pub mod write {
             }
 
             buf[0] = byte;
-            buf = &buf[1..];
+            buf = &mut buf[1..];
             bytes_written += 1;
 
             if val == 0 {
-                return bytes_written;
+                return (bytes_written, buf);
             }
         }
     }
@@ -177,11 +173,11 @@ pub mod write {
             }
 
             buf[0] = byte;
-            buf = &buf[1..];
+            buf = &mut buf[1..];
             bytes_written += 1;
 
             if done {
-                return Ok(bytes_written);
+                return (Ok(bytes_written), buf);
             }
         }
     }
