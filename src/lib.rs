@@ -63,6 +63,8 @@ pub fn low_bits_of_u64(val: u64) -> u8 {
 /// A module for reading LEB128-encoded signed and unsigned integers.
 pub mod read {
     use super::{low_bits_of_byte, CONTINUATION_BIT, SIGN_BIT};
+    use core::Result::{self, Ok, Err};
+    use core::marker::Sized;
     #[cfg(feature = "std")]
     use std::io;
     #[cfg(not(feature = "std"))]
@@ -183,6 +185,8 @@ pub mod read {
 /// A module for writing LEB128-encoded signed and unsigned integers.
 pub mod write {
     use super::{low_bits_of_u64, CONTINUATION_BIT};
+    use core::Result::{self, Ok};
+    use core::marker::Sized;
     #[cfg(feature = "std")]
     use std::io;
     #[cfg(not(feature = "std"))]
