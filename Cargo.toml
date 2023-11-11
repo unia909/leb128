@@ -20,5 +20,5 @@ core_io = { version = "0.1.20210325", optional = true }
 quickcheck = "0.8.0"
 
 [features]
-nightly = []
+default = ["core_io"]
 std = []

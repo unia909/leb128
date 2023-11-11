@@ -43,9 +43,6 @@
 #![deny(missing_docs)]
 #![no_std]
 
-#[cfg(not(feature = "std"))]
-extern crate core_io;
-
 #[doc(hidden)]
 pub const CONTINUATION_BIT: u8 = 1 << 7;
 #[doc(hidden)]
