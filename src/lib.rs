@@ -70,7 +70,7 @@ pub mod read {
             let byte = (*buf)[0];
             if shift == 63 && byte != 0x00 && byte != 0x01 {
                 while buf[0] & CONTINUATION_BIT != 0 {
-                    buf = &buf[1..];
+                    *buf = &(*buf)[1..];
                 }
                 return Err(());
             }
@@ -100,7 +100,7 @@ pub mod read {
             byte = (*buf)[0];
             if shift == 63 && byte != 0x00 && byte != 0x7f {
                 while buf[0] & CONTINUATION_BIT != 0 {
-                    buf = &buf[1..];
+                    *buf = &(*buf)[1..];
                 }
                 return Err(());
             }
