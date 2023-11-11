@@ -62,7 +62,7 @@ pub mod read {
     /// Read an unsigned LEB128-encoded number from the buf
     ///
     /// On success, return the number.
-    pub fn unsigned(buf: &mut &[u8]) -> (Result<u64, ()>, &[u8]) {
+    pub fn unsigned(buf: &mut &[u8]) -> Result<u64, ()> {
         let mut result = 0;
         let mut shift = 0;
 
@@ -72,7 +72,7 @@ pub mod read {
                 while buf[0] & CONTINUATION_BIT != 0 {
                     buf = &buf[1..];
                 }
-                return (Err(()), buf);
+                return Err(());
             }
             *buf = &(*buf)[1..];
 
@@ -80,7 +80,7 @@ pub mod read {
             result |= low_bits << shift;
 
             if byte & CONTINUATION_BIT == 0 {
-                return (Ok(result), buf);
+                return Ok(result);
             }
 
             shift += 7;
@@ -102,7 +102,7 @@ pub mod read {
                 while buf[0] & CONTINUATION_BIT != 0 {
                     buf = &buf[1..];
                 }
-                return (Err(()), buf);
+                return Err(());
             }
             *buf = &(*buf)[1..];
 
