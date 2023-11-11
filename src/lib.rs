@@ -62,19 +62,20 @@ pub mod read {
     /// Read an unsigned LEB128-encoded number from the buf
     ///
     /// On success, return the number.
-    pub fn unsigned(buf: &mut &[u8]) -> Result<u64, ()> {
+    pub fn unsigned<B: AsRef<[u8]>, T: AsMut<B>>(buf: &T) -> Result<u64, ()> {
+        let buf = buf.as_mut();
         let mut result = 0;
         let mut shift = 0;
 
         loop {
-            let byte = (*buf)[0];
+            let byte = (*buf).as_ref()[0];
             if shift == 63 && byte != 0x00 && byte != 0x01 {
                 while buf[0] & CONTINUATION_BIT != 0 {
-                    *buf = &(*buf)[1..];
+                    *buf = &(*buf).as_ref()[1..];
                 }
                 return Err(());
             }
-            *buf = &(*buf)[1..];
+            *buf = &(*buf).as_ref()[1..];
 
             let low_bits = low_bits_of_byte(byte) as u64;
             result |= low_bits << shift;
@@ -133,7 +134,8 @@ pub mod write {
     /// Write `val` to the buf as an unsigned LEB128 value.
     ///
     /// On success, return the number of bytes written to `w`.
-    pub fn unsigned<'a>(buf: &'a mut &'a mut [u8], mut val: u64) -> usize {
+    pub fn unsigned<'a, B: AsMut<[u8]>, T: AsMut<B>>(buf: &T, mut val: u64) -> usize {
+        let buf = buf.as_mut();
         let mut bytes_written = 0;
         loop {
             let mut byte = low_bits_of_u64(val);
@@ -143,8 +145,8 @@ pub mod write {
                 byte |= CONTINUATION_BIT;
             }
 
-            (*buf)[0] = byte;
-            *buf = &mut (*buf)[1..];
+            (*buf).as_mut()[0] = byte;
+            *buf = &mut (*buf).as_mut()[1..];
             bytes_written += 1;
 
             if val == 0 {
